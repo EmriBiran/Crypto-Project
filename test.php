@@ -39,7 +39,7 @@
 			<div class="w3-bar w3-black">
 				<button class="w3-bar-item w3-button tablink" onclick="openLink(event, 'SearchArea');"><i class="fa fa-money w3-margin-right"></i>_Find My Money</button>
 			</div>
-
+		
 			<!-- Search Tab -->
 			<div id="SearchArea" class="w3-container w3-white w3-padding-16 myLink" >
 				<div class="w3-row-padding" >
@@ -53,17 +53,23 @@
 						</div>
 						<div class="w3-quarter">
 							<h5></h5>
-							<button type="button" class="w3-button w3-red w3-padding" onclick="loadDoc()" align="right">Search</button>
+							<button type="button" class="w3-button w3-red w3-padding " align="right">Search</button>
 						</div>
 					</div>
 				</div>			
-			</div>		
-		</div>		
+			</div>
+			<div class="w3-container">	
+				<h1>The XMLHttpRequest Object</h1>
+				<button type="button" onclick="loadDoc()">Get my CD collection</button>
+				<table id="demo"></table>
+			</div>
+	
+		</div>
 	</img>
 	</div>
 	
 	<!-- Info Tab -->
-	<div class="TopPic w3-container w3-padding-48">
+	<div class="TopPic w3-container w3-padding-48" style="top:0%;">
 			<p class="SetPosTxtInfo" > Dear BITCOIN user, we happy to have you in our website! here you can find coins that belongs to you and you didn't even know existing!<span id="dots">...</span>
 			<span id="more" > Since August 2017 we are Witnessing many Hard Forks of the BITCOIN,
 			users of the coin who purchased BITCOIN prior to those Forks are enjoying coins in the "new" fork in the amount of
@@ -75,9 +81,9 @@
 	</div>
 	
 <!-- coins photo Container -->
-	<div class="w3-container w3-padding-32 w3-black" >
+	<div class="w3-container w3-padding-32 w3-black">
 		<h1 align="center">We support finding the following coins </h1>		
-		<div class="w3-row" align="center"><br>
+		<div class="w3-row"><br>
 			<table>
 				<tr>
 					<img src="photos/ABC.jpg" class="CoinsPic"></img>
@@ -129,7 +135,7 @@
 				<p><input class="w3-input w3-border w3-padding w3-half" type="text" placeholder="Email" name="email"></p>
 				<p><input class="w3-input w3-padding-32 w3-border" type="text" placeholder="Message" name="message"></p>
 				<!-- </span><button class="w3-button w3-dark-grey w3-black w3-padding w3-border-0" align="right" onclick="validMail()" id="myBtn">SEND MESSAGE</button></p> -->
-				<input class="w3-button w3-black w3-padding w3-border-0" align="right" onclick="validMail()" type="submit" name="submit" value="send email"/>
+				<input class="w3-button w3-black w3-padding w3-border-0" align="right" type="submit" name="submit" value="send email"/>
 				</form>
 				<?php
 					if(isset$_POST{'submit'})
@@ -183,6 +189,33 @@
 				tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
 			document.getElementById(linkName).style.display = "block";
 			evt.currentTarget.className += " w3-red";
+		}
+		
+		function loadDoc()
+		{
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function()
+			{
+				if (this.readyState == 4 && this.status == 200)
+				{
+					myFunction(this);
+				}
+			};
+			xhttp.open("GET", "cd_catalog.xml", true);
+			xhttp.send();
+		}
+		function myFunction(xml)
+		{
+			var i;
+			var xmlDoc = xml.responseXML;
+			var table="<tr><th>Artist</th><th>Title</th></tr>";
+			var x = xmlDoc.getElementsByTagName("CD");
+			for (i = 0; i <x.length; i++) 
+			{ 
+				table += "<tr><td>" +	x[i].getElementsByTagName("ARTIST")[0].childNodes[0].nodeValue +	"</td><td>" +
+				x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue +	"</td></tr>";
+			}
+			document.getElementById("demo").innerHTML = table;
 		}
 
 	</script>

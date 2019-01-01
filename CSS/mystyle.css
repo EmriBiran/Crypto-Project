@@ -1,9 +1,20 @@
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
+.myLink {display: none}
+#more {display: none;}
 
 #animate {
   width: 2000px;
   height: 20px;
   position: absolute;
   background-color: white;
+}
+
+.table,.th,.td {
+  border : 1px solid black;
+  border-collapse: collapse;
+}
+.th,.td {
+  padding: 5px;
 }
 
 .SearchButton{
@@ -18,7 +29,8 @@
 }
 .EnterKeyDesign{
 	position:absolute;
-	width:38%;	
+	width:35%;	
+	min-width:25%;
 	left: 50%;
 }
 
