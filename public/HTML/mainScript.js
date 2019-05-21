@@ -46,7 +46,7 @@ function loadDoc()
 			myFunction(this);
 		}
 	};
-	xhttp.open("GET", "cd_catalog.xml", true);
+	xhttp.open("GET", "newRequesrt.xml", true);
 	xhttp.send();
 }
 
@@ -54,7 +54,7 @@ function myFunction(xml)
 {
 	var i;
 	var xmlDoc = xml.responseXML;
-	var table="<tr><th>Artist</th><th>Title</th></tr>";
+	var table="<tr><th>Coin</th><th>balance</th></tr>";
 	var x = xmlDoc.getElementsByTagName("CD");
 	for (i = 0; i <x.length; i++) 
 	{ 
