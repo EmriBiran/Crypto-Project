@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var path = require("path");
 var mysql = require('mysql');
+var builder = require('xmlbuilder');
+var fs = require('fs');
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -25,18 +27,36 @@ function read_from_DB(address)
     });
 }
 
+function make_xml_file(address)
+{
+    var xml = builder.create('coinBook');
+    xml.ele('coin')
+        .ele('coinName', "Some_coin").up()
+        .ele('coinBalance', '52').up()
+        .up()
+    .end();
+
+
+    var doc = xml.toString({pretty: true});
+    fs.writeFile('C:\\temp\\test.xml', doc, function(err){
+        if(err)
+        {
+            return console.log(err);
+        }
+        console.log("saved xml");
+    });
+}
+
 
 
 app.get("/", function(req, res){
+    
     res.sendFile(path.join(__dirname, "public", "MainPage.html"));
 })
 
-read_from_DB("Lior");
+make_xml_file("lior");
 app.listen(80);
 
-
-
-document.getElementsByClassName("tablink")[0].click();
 
 
 
