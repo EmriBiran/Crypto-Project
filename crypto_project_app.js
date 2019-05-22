@@ -54,7 +54,7 @@ app.get("/", function(req, res){
     res.sendFile(path.join(__dirname, "public", "MainPage.html"));
 })
 
-make_xml_file("lior");
+read_from_DB("lior");
 app.listen(80);
 
 
