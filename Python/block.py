@@ -174,33 +174,20 @@ class txOutput:
         print "\tScript Len:\t %d" % self.scriptLen
         print "\tScriptPubkey:\t %s" % self.decodeScriptPubkey(self.pubkey)
 
-    def decodeScriptPubkey(self,data):
+    def decodeScriptPubkey(self, data):
         hexstr = hashStr(data)
-        op_idx = int(hexstr[0:2],16)
+        op_idx = int(hexstr[0:2], 16)
         try:
             op_code1 = OPCODE_NAMES[op_idx]
         except KeyError: #Obselete pay to pubkey directly
-            #print " \tOP_CODE %d is probably obselete pay to address"
             keylen = op_idx
-            #op_codeTail = OPCODE_NAMES[int(hexstr[2+keylen*2:2+keylen*2+2],16)]
-            #print " \tPubkey OP_CODE:\t " "None " + "Bytes:%d " % keylen + "tail_op_code:" +  op_codeTail + " "
-            #print "\tPure Pubkey:\t   %s" % hexstr[2:2+keylen*2]
             return hexstr[2:2+keylen*2]
         if op_code1 == "OP_DUP":  #P2PKHA pay to pubkey hash mode
-            #op_code2 = OPCODE_NAMES[int(hexstr[2:4],16)] + " "
             keylen = int(hexstr[4:6],16)
-            #op_codeTail2nd = OPCODE_NAMES[int(hexstr[6+keylen*2:6+keylen*2+2],16)]
-            #op_codeTailLast = OPCODE_NAMES[int(hexstr[6+keylen*2+2:6+keylen*2+4],16)]
-            #print " \tPubkey OP_CODE:\t " + op_code1 + " " + op_code2 + " " + "Bytes:%d " % keylen + "tail_op_code:" +  op_codeTail2nd + " " + op_codeTailLast
-            #print "\tPubkeyHash:\t       %s" % hexstr[6:6+keylen*2]
             return hexstr[6:6+keylen*2]
         elif op_code1 == "OP_HASH160": #P2SHA pay to script hash
             keylen = int(hexstr[2:4],16)
-            #op_codeTail = OPCODE_NAMES[int(hexstr[4+keylen*2:4+keylen*2+2],16)]
-            #print " \tPubkey OP_CODE:\t " + op_code1 + " " + " " + "Bytes:%d " % keylen + "tail_op_code:" +  op_codeTail + " "
-            #print "\tPure Pubkey:\t     %s" % hexstr[4:4+keylen*2]
             return hexstr[4:4+keylen*2]
         else: #TODO extend for multi-signature parsing
-            print "\t Need to extend multi-signatuer parsing %x" % int(hexstr[0:2],16) + op_code1
             return hexstr
 
