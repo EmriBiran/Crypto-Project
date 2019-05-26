@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var path = require("path");
 var mysql = require('mysql');
+var builder = require('xmlbuilder');
+var fs = require('fs');
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -25,8 +27,29 @@ function read_from_DB(address)
     });
 }
 
+function make_xml_file(address)
+{
+    var xml = builder.create('coinBook');
+    xml.ele('coin')
+        .ele('coinName', "Some_coin").up()
+        .ele('coinBalance', '52').up()
+        .up()
+    .end();
 
 
+    var doc = xml.toString({pretty: true});
+    fs.writeFile('C:\\temp\\test.xml', doc, function(err){
+        if(err)
+        {
+            return console.log(err);
+        }
+        console.log("saved xml");
+    });
+}
+
+
+
+<<<<<<< HEAD
 app.get("/", function(req, res){  // the main page
     res.sendFile(path.join(__dirname, "public\\HTML", "MainPage.html"));
 })
@@ -38,13 +61,24 @@ app.get("/EXMPLExml.xml", function(req, res){  // sending the xml file as respon
 
 
 
+=======
+app.get("/", function(req, res){
+    
+    res.sendFile(path.join(__dirname, "public", "MainPage.html"));
+})
+
+read_from_DB("lior");
+>>>>>>> a19083b59c8e427d8225df666e02017cdfa1e1d9
 app.listen(80);
 
 
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> a19083b59c8e427d8225df666e02017cdfa1e1d9
 
 
 
