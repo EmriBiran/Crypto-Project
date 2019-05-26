@@ -27,16 +27,22 @@ function read_from_DB(address)
 
 
 
-app.get("/", function(req, res){
-    res.sendFile(path.join(__dirname, "public", "MainPage.html"));
+app.get("/", function(req, res){  // the main page
+    res.sendFile(path.join(__dirname, "public\\HTML", "MainPage.html"));
 })
 
-read_from_DB("Lior");
+app.get("/EXMPLExml.xml", function(req, res){  // sending the xml file as response for the xml request
+    res.contentType('application/xml');
+    res.sendFile(path.join(__dirname, "public\\HTML", "EXMPLExml.xml"));   
+})
+
+
+
 app.listen(80);
 
 
 
-document.getElementsByClassName("tablink")[0].click();
+
 
 
 
