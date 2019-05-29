@@ -59,7 +59,3 @@ app.get("/EXMPLExml.xml", function(req, res){  // sending the xml file as respon
 
 read_from_DB("lior");
 app.listen(80);
-
-
-
-
