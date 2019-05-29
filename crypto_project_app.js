@@ -49,16 +49,36 @@ function make_xml_file(address)
 
 
 
+<<<<<<< HEAD
+app.get("/", function(req, res){  // the main page
+    res.sendFile(path.join(__dirname, "public\\HTML", "MainPage.html"));
+})
+
+app.get("/EXMPLExml.xml", function(req, res){  // sending the xml file as response for the xml request
+    res.contentType('application/xml');
+    res.sendFile(path.join(__dirname, "public\\HTML", "EXMPLExml.xml"));   
+})
+
+
+
+=======
 app.get("/", function(req, res){
     
     res.sendFile(path.join(__dirname, "public", "MainPage.html"));
 })
 
 read_from_DB("lior");
+>>>>>>> a19083b59c8e427d8225df666e02017cdfa1e1d9
 app.listen(80);
 
 
 
+<<<<<<< HEAD
+
+
+
+=======
+>>>>>>> a19083b59c8e427d8225df666e02017cdfa1e1d9
 
 
 
