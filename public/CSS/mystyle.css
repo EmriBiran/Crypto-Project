@@ -9,12 +9,37 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
   background-color: white;
 }
 
-.table,.th,.td {
-  border : 1px solid black;
-  border-collapse: collapse;
+
+
+table tr{
+	width: 80%;
+	height: 20%;	
+	border: 2px solid black; /* background color */
+	background: #ffffff;   
+	opacity: 0.7;
 }
-.th,.td {
-  padding: 5px;
+
+table td{
+	border-collapse: collapse;
+	border: 2px solid black; /* background color */
+}
+
+table th{
+	border-collapse: collapse;
+	border: 2px solid black; /* background color */
+}
+
+.tableProp{
+	width: 100%;
+	height: 20%;					  
+	font: 30px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	border-collapse: collapse;
+}
+
+.backGroundImg{
+	vertical-align:middle;
+	width: 100%;
+	max-height: 940px;	
 }
 
 .SearchButton{
@@ -54,7 +79,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
 	width:12%
 }
 
-.TopPic{
+.infoArea{
 	position:absolute;
 	/*width:80%; 
 	height: 40%;*/
@@ -82,15 +107,6 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
 	-ms-transform:translate(-50%,-50%)
 }
 
-.w3-imageTop{
-	max-height: 600px;
-	max-width:100%;
-	width:100%;
-	height: 40%;
-	height: 800px;
-	vertical-align:middle;
-	color:inherit;
-}
 
 #inf_txt{
 	width:80%; 
