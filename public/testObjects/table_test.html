@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Crypto Project</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+</head>
+<style>
+	table,th,td {
+	  border : 1px solid black;
+	  border-collapse: collapse;
+	}
+	th,td {
+	  padding: 5px;
+	}
+</style>
+
+<body class = "w3-light-grey">
+	
+	<button type="button" onclick="loadDoc()">Get my CD collection</button>
+	<br><br>
+	<table id="CoinsTable"></table>
+	<!-- End Of Body -->
+	
+<script>
+function loadDoc() 
+{
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function()
+	{
+		if (this.readyState == 4 && this.status == 200)	{
+			buildTable(this);
+		}
+	};
+	xhttp.open("GET", "/EXMPLExml.xml", true);
+	xhttp.send();
+}
+
+
+function buildTable(xml) {
+  var i;
+  var xmlDoc = xml.responseXML;
+  var table="<tr><th>COIN</th>";
+  var coin = xmlDoc.getElementsByTagName("COIN");
+  var len = coin.length;
+  for (i = 0; i <len; i++) { 
+    table += "<td>" + coin[i].getElementsByTagName("CoinName")[0].childNodes[0].nodeValue + "</td>";
+  }
+  table += "</tr><tr><th>BALANCE</th>";
+  for (i = 0; i <len; i++) { 
+    table += "<td><center>" + coin[i].getElementsByTagName("CoinBalance")[0].childNodes[0].nodeValue + "</center></td>";
+  }
+  table += "</tr>";
+  document.getElementById("CoinsTable").innerHTML = table;
+}
+
+</script>
+
+</body>
+</html>
