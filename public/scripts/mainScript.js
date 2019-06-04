@@ -33,7 +33,6 @@
 		{
 			var xhttp = new XMLHttpRequest();
 			var userPK = document.getElementById('PublicKey').value;
-<<<<<<< HEAD
 			var worngInput = false;
 			for (i = 0; i < userPK.length; i++){
 				if( (userPK.charCodeAt(i) < 48) || (userPK.charCodeAt(i) > 122) || ( (userPK.charCodeAt(i) > 57) && (userPK.charCodeAt(i) < 65) )){
@@ -60,24 +59,12 @@
 				}
 			}		
 		
-=======
-			alert(userPK);		
-			xhttp.onreadystatechange = function()
-			{
-				if (this.readyState == 4 && this.status == 200)	{
-					buildTable(this);
-				}
-			};
-			xhttp.open("GET", "/EXMPLExml.xml", true);
-			xhttp.send();
->>>>>>> 3bcb7e5a185f15e91aa04ab865787f1992a63cf0
 		}
 
 
 		function buildTable(xml) {
 			var i;
 			var xmlDoc = xml.responseXML;
-<<<<<<< HEAD
 			var table;
 			var div = "<h1></h1>";
 			var coin = xmlDoc.getElementsByTagName("COIN");
@@ -92,16 +79,6 @@
 			// }
 			// table += "</tr>";
 			table += "<tr>";
-=======
-			var table="<tr>";
-			var div = "<h1></h1>"
-			var coin = xmlDoc.getElementsByTagName("COIN");
-			var len = coin.length;
-			for (i = 0; i <len; i++) { 
-				table += "<th><center>" + coin[i].getElementsByTagName("CoinName")[0].childNodes[0].nodeValue + "</center></th>";
-			}
-			table += "</tr>";
->>>>>>> 3bcb7e5a185f15e91aa04ab865787f1992a63cf0
 			for (i = 0; i <len; i++) { 
 				table += "<td><center>" + coin[i].className + coin[i].getElementsByTagName("CoinBalance")[0].childNodes[0].nodeValue + "</center></td>";
 			}
@@ -119,11 +96,7 @@
 		}
 		
 		function loadInstegram(){
-<<<<<<< HEAD
 			window.open('https://www.instagram.com/p/Bx7NWW-guoK/', '_blank');
-=======
-			window.open('https://www.instagram.com/', '_blank');
->>>>>>> 3bcb7e5a185f15e91aa04ab865787f1992a63cf0
 		}
 		
 		function loadFacebook(){
@@ -131,7 +104,6 @@
 		}
 		
 		function MailSpread(){
-<<<<<<< HEAD
 			var MailNewList = document.getElementById('MailNL').value;
 			var worngInput = true;
 
@@ -143,9 +115,4 @@
 				}
 			}
 			//alert(worngInput);		
-=======
-			var MailNL = document.getElementById('MailNL').value;
-			
-			alert(MailNL);		
->>>>>>> 3bcb7e5a185f15e91aa04ab865787f1992a63cf0
 		}
