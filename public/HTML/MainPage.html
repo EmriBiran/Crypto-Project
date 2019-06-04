@@ -14,7 +14,7 @@
 	<!-- top Div -->
 	<div class="w3-container ">
 		<div class="w3-half w3-opacity w3-xlarge " >
-			<b>Walcome to Lior & Emri's Final Project</b>
+			<b>Welcome to Lior & Emri's Final Project</b>
 		</div>
 		<div class="w3-half w3-opacity w3-xlarge" align="right" >
 			<b">Find Us On:</b>
@@ -51,9 +51,17 @@
 					</div>
 				</div>			
 			</div>
-			<!-- End Of Search Tab -->	
-		<br><br>
-		<table id="CoinsTable" class="tableProp" background="white" style="top: 35%;" ></table>		<!-- create table upon request-->
+			<!-- End Of Search Tab -->
+			
+			<!-- Loading and table Tab -->
+			<img href="#"class="loader"></img>
+			<a href="#" onclick="button2()" class="button2">hide</a>
+			<div id="show">
+
+			</div>
+
+			<br><br>
+			<table id="CoinsTable" class="tableProp" background="white" style="top: 35%;" ></table>	 <!-- create table upon request-->
 		</div>
 	</img>
 	</div>
@@ -114,43 +122,29 @@
 	</div>
 	<!-- Enf Of Newsletter -->
 
-	<!-- Contact Us-->
-	<div class="w3-container">
-		<div class="w3-quarter">
-			<h3>Contact Us</h3>
-			<i class="fa fa-map-marker" style="width:30px"></i> Tel Aviv, ISRAEL<br>
-			<i class="fa fa-phone w3-border-0" style="width:30px"></i> Phone: +97250-9016004<br>
-			<i class="fa fa-envelope w3-border-0" style="width:30px"> </i> Email: matangur117@gmail.com<br>
-		</div>
-		<div class="w3-threequarter ">
-			<form name="contact_form" action="" method="post"> 
-				<p><input class="w3-input w3-border w3-padding w3-half" type="text" placeholder="Name" name="name"></p>
-				<p><input class="w3-input w3-border w3-padding w3-half" type="text" placeholder="Email" name="email"></p>
-				<p><input class="w3-input w3-padding-32 w3-border" type="text" placeholder="Message" name="message"></p>
-				<input class="w3-button w3-black w3-padding w3-border-0" align="right" onclick="validMail()" type="submit" name="submit" value="send email"/>
-			</form>
-		</div>
+	<div class="contact_us_container"><h3>Contact Us</h3>
+		<i class="fa fa-map-marker cont_st" ></i>   Tel Aviv, ISRAEL<br>
+		<i class="fa fa-phone w3-border-0 cont_st"></i> Phone: +97250-9016004<br>
+		<i class="fa fa-envelope w3-border-0 cont_st"> </i> Email: matangur117@gmail.com<br>
+		<div class="w3-padding-32"></div>
 	</div>
-	<!--End Of Contact -->
-	
+
+	</div>
+
 	<!-- white space in the end of page -->
-	<div class="w3-container w3-padding-8 w3-panel"></div>
 			
 <!-- End Of Body -->
 <script src="../scripts/mainScript.js"></script>
 </body>
 </html>
 
+	<!-- <div class="w3-threequarter ">
+			 <form name="contact_form" action="" method="GET">  -->
+				<!-- <p><input class="w3-input w3-border w3-padding w3-half" type="text" placeholder="Name"    id="name"    ></p>
+				<p><input class="w3-input w3-border w3-padding w3-half" type="text" placeholder="Email"   id="email"   ></p>
+				<p><input class="w3-input w3-padding-32 w3-border" 		type="text" placeholder="Message" id="message" ></p>
+				<input class="w3-button w3-black w3-padding w3-border-0"  onclick="MailSend()" type="submit" name="submit" value="send email"/>
+			</form>
+		 </div> -->
+	<!--End Of Contact -->
 
-
-<!-- function getValue (id) { -->
-<!-- text = document.getElementById(id).value; //value of the text input -->
-<!-- alert(text); -->
-<!-- document.getElementById(id).value = ''; -->
-<!-- return false; -->
-<!-- } -->
-<!-- <div class="entry foreground-color"> -->
-<!-- <form onsubmit="return getValue('commands')"> -->
-<!-- <input type="text" name="commands" size="60" id="commands"/> -->
-<!-- </form> -->
-<!-- </div> -->

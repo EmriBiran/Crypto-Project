@@ -1,5 +1,13 @@
 		document.getElementsByClassName("tablink")[0].click();
 		
+		function loadInstegram(){
+			window.open('https://www.instagram.com/p/Bx7NWW-guoK/', '_blank');
+		}
+		
+		function loadFacebook(){
+			window.open('https://www.facebook.com/emri.biran', '_blank');
+		}
+
 		function ReadMore() {
 			var dots = document.getElementById("dots");
 			var moreText = document.getElementById("more");
@@ -29,44 +37,53 @@
 			evt.currentTarget.className += " w3-red";
 		}
 		
+		function button2(){
+			document.getElementById('show').style.visibility='hidden';
+		}
+		
+
 		function loadCoinsTable() 
 		{
+			var img;
 			var xhttp = new XMLHttpRequest();
 			var userPK = document.getElementById('PublicKey').value;
 			var worngInput = false;
+			document.getElementById('show').style.visibility='visible';
 			for (i = 0; i < userPK.length; i++){
 				if( (userPK.charCodeAt(i) < 48) || (userPK.charCodeAt(i) > 122) || ( (userPK.charCodeAt(i) > 57) && (userPK.charCodeAt(i) < 65) )){
 					worngInput = true;
-					//alert("you enterd: " + userPK[i]);
+					// alert("you enterd: " + userPK[i]);
 					break;
 				}
 			}
 			if(userPK.length == 0);
-			else if(userPK.length < 20 || userPK.length > 35 || worngInput)  alert("Invalid Input");
+			else if( userPK.length < 20 )		alert("Input Is Too Short");
+			else if( userPK.length > 35 ) 		alert("Input Is Too Long");
+			else if( worngInput )  				alert("Invalid Input");
 			else{
 				try{
 					xhttp.onreadystatechange = function()
 					{
-						if (this.readyState == 4 && this.status == 200)	{
-							buildTable(this);
-						}
+						if(this.readyState == 4 && this.status == 200)
+							window.setTimeout(() => { 
+								// loader.className += " hidden" ;
+								buildTable(this);
+							}, 2000);						
 					};
-					xhttp.open("GET", "/EXMPLExml.xml", true);
+					retVar = xhttp.open("GET", "/EXMPLExml.xml", true);
 					xhttp.send();
 				}
 				catch(err){
-					alert("Sorry We Couldn't Find Your Balance");
+					alert("Sorry We Could Not Find Your Balance");
 				}
 			}		
 		
 		}
 
-
 		function buildTable(xml) {
 			var i;
 			var xmlDoc = xml.responseXML;
 			var table;
-			var div = "<h1></h1>";
 			var coin = xmlDoc.getElementsByTagName("COIN");
 			//var len = coin.length;
 			var len = 3;
@@ -84,35 +101,28 @@
 			}
 			table += "</tr>";
 			document.getElementById("CoinsTable").innerHTML = table;
-			document.getElementById("CoinsTableBackground").innerHTML = div;
-			
-		}
-		
-		function validMail(){
-			var frmvalidator  = new Validator("contactform");
-			frmvalidator.addValidation("name","req","Please provide your name");
-			frmvalidator.addValidation("email","req","Please provide your email");
-			frmvalidator.addValidation("email","email", "Please enter a valid email address");
-		}
-		
-		function loadInstegram(){
-			window.open('https://www.instagram.com/p/Bx7NWW-guoK/', '_blank');
-		}
-		
-		function loadFacebook(){
-			window.open('https://www.facebook.com/emri.biran', '_blank');
 		}
 		
 		function MailSpread(){
 			var MailNewList = document.getElementById('MailNL').value;
-			var worngInput = true;
+			var Shtrodel = false;
+			var Dot = false ;
 
 			for (i = 0; i < MailNewList.length; i++){
-				if( MailNewList.charCodeAt(i) == 64 ){
-					worngInput = false;
-					alert("you enterd: " + MailNewList[i]);
-					break;
-				}
+				if( 64 == MailNewList.charCodeAt(i) )
+					Shtrodel = true;
+				if( 46 == MailNewList.charCodeAt(i) )
+					Dot = true;
 			}
-			//alert(worngInput);		
+			if(MailNewList.length == 0);
+			else if( MailNewList.length < 20 || MailNewList.length > 50 )  alert("Invalid Input");
+			else if( !Shtrodel || !Dot )  								   alert("Please enter a valid email address");
+			else														   alert("Congratulations Email Addres Added To Mail Spread!");
+			// we can add authintication from database
 		}
+
+		// function MailSend(){
+
+		// }
+		
+	
