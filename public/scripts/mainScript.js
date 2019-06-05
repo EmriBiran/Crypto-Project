@@ -1,3 +1,18 @@
+		const LOWASCILTRS   = 48;
+		const HIGHASCILTRS  = 122;
+		const MIDASCILTRS1  = 57;
+		const MIDASCILTRS2  = 65;
+		const DOT 		   = 46;
+		const SHTRODEL 	   = 64;
+		const SHORTPK      = 26;
+		const LONGPK       = 35;
+		const SHORTMAIL    = 20;
+		const LONGMAIL     = 50;
+		const READYRSTTCTR = 4;
+		const CONNECTSTATE = 200;
+		const NOINPUT      = 0;
+		const SUPPORTEDCOINS = 3;
+		
 		document.getElementsByClassName("tablink")[0].click();
 		
 		function loadInstegram(){
@@ -37,10 +52,20 @@
 			evt.currentTarget.className += " w3-red";
 		}
 		
+
+
+
+
+
+
+
+
 		function button2(){
 			document.getElementById('show').style.visibility='hidden';
 		}
-		
+		function button(){
+			document.getElementById('show').style.visibility='visible';
+		}
 
 		function loadCoinsTable() 
 		{
@@ -48,26 +73,28 @@
 			var xhttp = new XMLHttpRequest();
 			var userPK = document.getElementById('PublicKey').value;
 			var worngInput = false;
-			document.getElementById('show').style.visibility='visible';
 			for (i = 0; i < userPK.length; i++){
-				if( (userPK.charCodeAt(i) < 48) || (userPK.charCodeAt(i) > 122) || ( (userPK.charCodeAt(i) > 57) && (userPK.charCodeAt(i) < 65) )){
+				if( (userPK.charCodeAt(i) < LOWASCILTRS) || (userPK.charCodeAt(i) > HIGHASCILTRS) ||
+				 ( (userPK.charCodeAt(i) > MIDASCILTRS1) && (userPK.charCodeAt(i) < MIDASCILTRS2) )){
 					worngInput = true;
 					// alert("you enterd: " + userPK[i]);
 					break;
 				}
 			}
-			if(userPK.length == 0);
-			else if( userPK.length < 20 )		alert("Input Is Too Short");
-			else if( userPK.length > 35 ) 		alert("Input Is Too Long");
+			if(userPK.length == NOINPUT);			// do not react
+			else if( userPK.length < SHORTPK )	alert("Input Is Too Short");
+			else if( userPK.length > LONGPK ) 	alert("Input Is Too Long");
 			else if( worngInput )  				alert("Invalid Input");
 			else{
+				document.getElementById('show').style.visibility='visible';
 				try{
 					xhttp.onreadystatechange = function()
 					{
-						if(this.readyState == 4 && this.status == 200)
+						if(this.readyState == READYRSTTCTR && this.status == CONNECTSTATE)
 							window.setTimeout(() => { 
 								// loader.className += " hidden" ;
 								buildTable(this);
+								document.getElementById('show').style.visibility='hidden';
 							}, 2000);						
 					};
 					retVar = xhttp.open("GET", "/EXMPLExml.xml", true);
@@ -77,7 +104,6 @@
 					alert("Sorry We Could Not Find Your Balance");
 				}
 			}		
-		
 		}
 
 		function buildTable(xml) {
@@ -86,7 +112,7 @@
 			var table;
 			var coin = xmlDoc.getElementsByTagName("COIN");
 			//var len = coin.length;
-			var len = 3;
+			var len = SUPPORTEDCOINS;
 			table +="<tr><th><center>" + "BITCOIN" + "</center></th>";
 			table +="<th><center>" + "BITCOIN CASH" + "</center></th>";
 			table +="<th><center>" + "BITCOIN GOLD" + "</center></th></tr>";
@@ -109,20 +135,17 @@
 			var Dot = false ;
 
 			for (i = 0; i < MailNewList.length; i++){
-				if( 64 == MailNewList.charCodeAt(i) )
+				if( SHTRODEL == MailNewList.charCodeAt(i) )
 					Shtrodel = true;
-				if( 46 == MailNewList.charCodeAt(i) )
+				if( DOT == MailNewList.charCodeAt(i) )
 					Dot = true;
 			}
 			if(MailNewList.length == 0);
-			else if( MailNewList.length < 20 || MailNewList.length > 50 )  alert("Invalid Input");
-			else if( !Shtrodel || !Dot )  								   alert("Please enter a valid email address");
-			else														   alert("Congratulations Email Addres Added To Mail Spread!");
+			else if( MailNewList.length < SHORTMAIL || MailNewList.length > LONGMAIL )  alert("Invalid Input");
+			else if( !Shtrodel || !Dot )  								  				alert("Please enter a valid email address");
+			else														   				alert("Congratulations Email Addres Added To Mail Spread!");
 			// we can add authintication from database
 		}
 
-		// function MailSend(){
-
-		// }
 		
 	

@@ -1,26 +1,4 @@
-body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
-.myLink {display: none}
-#more {display: none;}
-
-#animate {
-  width: 2000px;
-  height: 20px;
-  position: absolute;
-  background-color: white;
-}
-
-.contact_us_container{
-	/* vertical-align:middle; */
-	position: absolute;
-	left:45%;
-}
-
-.cont_st{
-	vertical-align:middle;
-	width: 30px;
-}
-
-.loader{
+/* .loader{
 	position: absolute;
 	z-index: 95;
 	top: 25%;
@@ -47,18 +25,59 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
 		visibility: hidden;
 	}
 
-}
+} */
 
 #show {
 	visibility: hidden;
-	height: 100px;
-	width: 100px;
-	/* background-image: "../CSS/loader.gif"; */
-	src: "../CSS/loader.gif";
-	alt: "Loading..."
-
-  
+	position: absolute;
+	top: 25%;
+	left: 40%;
+	width: 20%;
+	height: 20%;
+	display: flex;
+	background-image: url("../CSS/loader.gif");
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
+.myLink {display: none}
+#more {display: none;}
+
+#animate {
+  width: 2000px;
+  height: 20px;
+  position: absolute;
+  background-color: white;
+}
+
+.contact_us_container{
+	/* vertical-align:middle; */
+	position: absolute;
+	left:45%;
+}
+
+.cont_st{
+	vertical-align:middle;
+	width: 30px;
+}
 
 table tr{
 	z-index: 99;
