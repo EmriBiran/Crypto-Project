@@ -1,3 +1,4 @@
+		// defines
 		const LOWASCILTRS   = 48;
 		const HIGHASCILTRS  = 122;
 		const MIDASCILTRS1  = 57;
@@ -15,30 +16,35 @@
 		
 		document.getElementsByClassName("tablink")[0].click();
 		
+		// Instegram connection
 		function loadInstegram(){
-			window.open('https://www.instagram.com/p/Bx7NWW-guoK/', '_blank');
+			window.open('https://www.instagram.com/p/BsxuZZJAu6s/', '_blank');
 		}
 		
+		// Facebook connection
 		function loadFacebook(){
 			window.open('https://www.facebook.com/emri.biran', '_blank');
 		}
 
+		// /* Information container */
 		function ReadMore() {
 			var dots = document.getElementById("dots");
 			var moreText = document.getElementById("more");
 			var btnText = document.getElementById("myBtn");
 			
-			if (dots.style.display === "none") {
+			if (dots.style.display === "none") {	// read mode
 				dots.style.display = "inline";
 				btnText.innerHTML = "Read more"; 
 				moreText.style.display = "none";
-			} else {
+			} 
+			else {									// read less
 				dots.style.display = "none";
 				btnText.innerHTML = "Read less"; 
 				moreText.style.display = "inline";
 			}
 		}
 		
+
 		function openLink(evt, linkName) 
 		{
 			var i, x, tablinks;
@@ -51,68 +57,58 @@
 			document.getElementById(linkName).style.display = "block";
 			evt.currentTarget.className += " w3-red";
 		}
-		
 
-
-
-
-
-
-
-
-		function button2(){
-			document.getElementById('show').style.visibility='hidden';
-		}
-		function button(){
-			document.getElementById('show').style.visibility='visible';
-		}
-
+		// Table for Coins balance
 		function loadCoinsTable() 
 		{
 			var img;
 			var xhttp = new XMLHttpRequest();
 			var userPK = document.getElementById('PublicKey').value;
 			var worngInput = false;
-			for (i = 0; i < userPK.length; i++){
+			// validate PK length
+			if(userPK.length == NOINPUT);											// do not react to no input
+			else if( userPK.length < SHORTPK )	alert("Input Is Too Short");
+			else if( userPK.length > LONGPK ) 	alert("Input Is Too Long");
+			// looking for char mistakes in input
+			for (i = 0; i < userPK.length; i++){ 	
 				if( (userPK.charCodeAt(i) < LOWASCILTRS) || (userPK.charCodeAt(i) > HIGHASCILTRS) ||
 				 ( (userPK.charCodeAt(i) > MIDASCILTRS1) && (userPK.charCodeAt(i) < MIDASCILTRS2) )){
 					worngInput = true;
-					// alert("you enterd: " + userPK[i]);
 					break;
 				}
 			}
-			if(userPK.length == NOINPUT);			// do not react
-			else if( userPK.length < SHORTPK )	alert("Input Is Too Short");
-			else if( userPK.length > LONGPK ) 	alert("Input Is Too Long");
-			else if( worngInput )  				alert("Invalid Input");
+			if( worngInput )  				alert("Invalid Input");
 			else{
+				// if PK is ok activate waiting bar
 				document.getElementById('show').style.visibility='visible';
 				try{
 					xhttp.onreadystatechange = function()
 					{
 						if(this.readyState == READYRSTTCTR && this.status == CONNECTSTATE)
 							window.setTimeout(() => { 
-								// loader.className += " hidden" ;
-								buildTable(this);
-								document.getElementById('show').style.visibility='hidden';
-							}, 2000);						
+								buildTable(this);										   // coins table builder
+								document.getElementById('show').style.visibility='hidden'; // make watinig ber hide
+							}, 2000);													   // create an active wait					
 					};
-					retVar = xhttp.open("GET", "/EXMPLExml.xml", true);
-					xhttp.send();
+					retVar = xhttp.open("GET", "/EXMPLExml.xml", true);					  // xml connector
+					xhttp.send();														  // send xml to FrontEnd
 				}
 				catch(err){
-					alert("Sorry We Could Not Find Your Balance");
+					alert("Sorry We Could Not Find Your Balance");						  // there is no such PK
 				}
 			}		
 		}
 
+
+		// build dynamic table
 		function buildTable(xml) {
 			var i;
-			var xmlDoc = xml.responseXML;
+			var xmlDoc = xml.responseXML;					// conact to XML file with coin data
 			var table;
-			var coin = xmlDoc.getElementsByTagName("COIN");
+			var coin = xmlDoc.getElementsByTagName("COIN");	// pull data from "COIN" section
 			//var len = coin.length;
-			var len = SUPPORTEDCOINS;
+			var len = SUPPORTEDCOINS;						// number of supported coins
+			// build table
 			table +="<tr><th><center>" + "BITCOIN" + "</center></th>";
 			table +="<th><center>" + "BITCOIN CASH" + "</center></th>";
 			table +="<th><center>" + "BITCOIN GOLD" + "</center></th></tr>";
@@ -122,25 +118,28 @@
 			// }
 			// table += "</tr>";
 			table += "<tr>";
+			// fetch coins value
 			for (i = 0; i <len; i++) { 
 				table += "<td><center>" + coin[i].className + coin[i].getElementsByTagName("CoinBalance")[0].childNodes[0].nodeValue + "</center></td>";
 			}
 			table += "</tr>";
-			document.getElementById("CoinsTable").innerHTML = table;
+			document.getElementById("CoinsTable").innerHTML = table;		// send back table to FrontEnd
 		}
 		
+
+		// /* contact us box */
 		function MailSpread(){
-			var MailNewList = document.getElementById('MailNL').value;
+			var MailNewList = document.getElementById('MailNL').value; // fetch user input
 			var Shtrodel = false;
 			var Dot = false ;
 
-			for (i = 0; i < MailNewList.length; i++){
+			for (i = 0; i < MailNewList.length; i++){		// validate mail input char's
 				if( SHTRODEL == MailNewList.charCodeAt(i) )
 					Shtrodel = true;
 				if( DOT == MailNewList.charCodeAt(i) )
 					Dot = true;
 			}
-			if(MailNewList.length == 0);
+			if(MailNewList.length == 0);	// validate mail input length
 			else if( MailNewList.length < SHORTMAIL || MailNewList.length > LONGMAIL )  alert("Invalid Input");
 			else if( !Shtrodel || !Dot )  								  				alert("Please enter a valid email address");
 			else														   				alert("Congratulations Email Addres Added To Mail Spread!");

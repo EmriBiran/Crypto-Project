@@ -1,3 +1,5 @@
+//SERVER SIDE
+
 var express = require('express');
 var app = express();
 var path = require("path");
@@ -27,6 +29,7 @@ function read_from_DB(address)
     });
 }
 
+// create xml file from PK entered by user
 function make_xml_file(address)
 {
     var xml = builder.create('coinBook');
@@ -47,15 +50,17 @@ function make_xml_file(address)
     });
 }
 
-
+// activate HTML page
 app.get("/", function(req, res){  // the main page
     res.sendFile(path.join(__dirname, "public\\HTML", "MainPage.html"));
 });
 
+// send xml to frontend
 app.get("/EXMPLExml.xml", function(req, res){  // sending the xml file as response for the xml request
     res.contentType('application/xml');
     res.sendFile(path.join(__dirname, "public\\HTML", "EXMPLExml.xml"));   
 });
 
+// connect to DB
 read_from_DB("lior");
 app.listen(80);
