@@ -1,18 +1,36 @@
-from BlockChainParser import *
+import BlockChainParser
 from DB import *
+import threading
+
+
+def multi_threaded_dictionary_insert(dictionary, coin):
+    dict1 = dictionary.keys()[0:len(dictionary) / 3]
+    dict2 = dictionary.keys()[len(dictionary) / 3: 2 * len(dictionary) / 3]
+    dict3 = dictionary.keys()[2 * len(dictionary) / 3:]
+
+    db_client1 = DBClient()
+    db_client2 = DBClient()
+    db_client3 = DBClient()
+
+    t1 = threading.Thread(target=db_client1.insert_dictionary, args=(dictionary, dict1, coin))
+    t2 = threading.Thread(target=db_client2.insert_dictionary, args=(dictionary, dict2, coin))
+    t3 = threading.Thread(target=db_client3.insert_dictionary, args=(dictionary, dict3, coin))
+
+    t1.start()
+    t2.start()
+    t3.start()
+
+    t1.join()
+    t2.join()
+    t3.join()
 
 
 def main():
     parser = BlockChainParser()
     parser.parse()  # will create dictionary with all utxs
     db_client = DBClient()
-    for utx in parser.utxs.keys():
-        for output in parser.utxs[utx].outputs.keys():
-            address = parser.public_key_to_address(parser.utxs[utx].outputs[output][0])
-            amount = float(parser.utxs[utx].outputs[output][1]) / 100000000  # the amount comes in satoshi(10^-8)
-            db_client.update_balance("core", address, amount)
-            del parser.utxs[utx].outputs[output]
-        del parser.utxs[utx]
+    db_client.insert_dictionary(parser.utxs, "core")
+    #multi_threaded_dictionary_insert(parser.utxs, "core")
 
 
 if __name__ == "__main__":

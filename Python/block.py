@@ -1,6 +1,6 @@
 from blocktools import *
 from codes import *
-from datetime import datetime
+import struct
 
 
 class BlockHeader:
@@ -11,18 +11,6 @@ class BlockHeader:
         self.time = uint4(blockchain)
         self.bits = uint4(blockchain)
         self.nonce = uint4(blockchain)
-
-    def toString(self):
-        print "Version:\t %d" % self.version
-        print "Previous Hash\t %s" % hashStr(self.previousHash)
-        print "Merkle Root\t %s" % hashStr(self.merkleHash)
-        print "Time stamp\t "+ self.decodeTime(self.time)
-        print "Difficulty\t %d" % self.bits
-        print "Nonce\t\t %s" % self.nonce
-
-    def decodeTime(self, time):
-        utc_time = datetime.utcfromtimestamp(time)
-        return utc_time.strftime("%Y-%m-%d %H:%M:%S.%f+00:00 (UTC)")
 
 
 class Block:
@@ -74,23 +62,11 @@ class Block:
     def setHeader(self, blockchain):
         self.blockHeader = BlockHeader(blockchain)
 
-    def toString(self):
-        print ""
-        print "Magic No: \t%8x" % self.magicNum
-        print "Blocksize: \t", self.blocksize
-        print ""
-        print "#"*10 + " Block Header " + "#"*10
-        self.blockHeader.toString()
-        print
-        print "##### Tx Count: %d" % self.txCount
-        for t in self.Txs:
-            t.toString()
-        print "#### end of all %d transactins" % self.txCount
-
 
 class Tx:
     def __init__(self, blockchain):
-        self.version = uint4(blockchain)
+        #self.version = uint4(blockchain)
+        self.version = hash_str(blockchain.read(4))
         self.inCount, self.in_count_header = varint(blockchain)
         self.inputs = []
         self.seq = 1
@@ -103,20 +79,7 @@ class Tx:
             for i in range(0, self.outCount):
                 output = txOutput(blockchain)
                 self.outputs.append(output)
-        self.lockTime = uint4(blockchain)
-
-    def toString(self):
-        print ""
-        print "="*20 + " No. %s " %self.seq + "Transaction " + "="*20
-        print "Tx Version:\t %d" % self.version
-        print "Inputs:\t\t %d" % self.inCount
-        for i in self.inputs:
-            i.toString()
-
-        print "Outputs:\t %d" % self.outCount
-        for o in self.outputs:
-            o.toString()
-        print "Lock Time:\t %d" % self.lockTime
+        self.lockTime = hash_str(blockchain.read(4))
 
 
 class txInput:
@@ -125,16 +88,11 @@ class txInput:
         self.txOutId = uint4(blockchain)
         self.scriptLen, self.script_len_header = varint(blockchain)
         self.scriptSig = blockchain.read(self.scriptLen)
-        self.seqNo = uint4(blockchain)
-
-    def toString(self):
-        print "\tTx Out Index:\t %s" % self.decodeOutIdx(self.txOutId)
-        print "\tScript Length:\t %d" % self.scriptLen
-        self.decodeScriptSig(self.scriptSig)
-        print "\tSequence:\t %8x" % self.seqNo
+        #self.seqNo = uint4(blockchain)
+        self.seqNo = hash_str(blockchain.read(4))
 
     def decodeScriptSig(self,data):
-        hexstr = hashStr(data)
+        hexstr = hash_str(data)
         if 0xffffffff == self.txOutId:  # Coinbase
             return hexstr
         scriptLen = int(hexstr[0:2],16)
@@ -148,29 +106,19 @@ class txInput:
             pubkey = hexstr[2+scriptLen+2:2+scriptLen+2+66]
             print " \tInPubkey:\t "  + pubkey
 
-    def decodeOutIdx(self,idx):
-        s = ""
-        if(idx == 0xffffffff):
-            s = " Coinbase with special index"
-            print "\tCoinbase Text:\t %s" % hashStr(self.prevhash).decode("utf-8")
-        else:
-            print "\tPrev. Tx Hash:\t %s" % hashStr(self.prevhash)
-        return "%8x"%idx + s
-
 
 class txOutput:
     def __init__(self, blockchain):
-        self.value = uint8(blockchain)
+        #self.value = uint8(blockchain)
+        self.value = blockchain.read(8)
+        self.int_value = struct.unpack('Q', self.value)[0]
+        self.value = hash_str(self.value)
         self.scriptLen, self.script_len_header = varint(blockchain)
+        #self.scriptLen = hash_str(blockchain.read(6))
         self.pubkey = blockchain.read(self.scriptLen)
 
-    def toString(self):
-        print "\tValue:\t\t %d" % self.value + " Satoshi"
-        print "\tScript Len:\t %d" % self.scriptLen
-        print "\tScriptPubkey:\t %s" % self.decodeScriptPubkey(self.pubkey)
-
     def decodeScriptPubkey(self, data):
-        hexstr = hashStr(data)
+        hexstr = hash_str(data)
         op_idx = int(hexstr[0:2], 16)
         try:
             op_code1 = OPCODE_NAMES[op_idx]

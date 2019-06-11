@@ -1,8 +1,8 @@
 import mysql.connector
-from mysql.connector import IntegrityError
 import time
 from BlockChainParser import BlockChainParser
-
+from mysql.connector import InternalError
+import time
 
 class DBClient(object):
 
@@ -32,30 +32,24 @@ class DBClient(object):
         """
         :param coin: string - the fork that we currently scanning(e.g: core, cash..)
         :param address: string - the address that we will update the balance of
-        :param amount: string- amount to be updeted
+        :param amount: string- amount to be updated
         :return:None
         the function sends sql query that updates the amount of coins that the current address has
+        the function is build as multi threaded safe from deadlocks
         """
-        sql = "INSERT INTO balances(address, " + coin + "_balance) VALUES (%s, %s)"
-        values = (address, amount)
-        try:
-            self.cursor.execute(sql, values)  # if the address is not in the DB
-            print "insert ", amount, "into ", address
-        except IntegrityError as error:
-            if error.errno == 1062:  # if the address is already in the DB
-                sql = "UPDATE balances SET " + coin + "_balance = " + coin + "_balance + %s WHERE address = %s"
-                values = (amount, address)
-                try:
-                    self.cursor.execute(sql, values)
-                    print "updated ", amount, "into", address
-
-                except Exception as error:
-                    print error
-            else:
+        while True:
+            sql = "INSERT INTO balances(address, " + coin + "_balance) VALUES (%s, %s) ON DUPLICATE KEY UPDATE " \
+                + coin + "_balance = " + coin + "_balance + %s"
+            values = (address, amount, amount)
+            try:
+                self.cursor.execute(sql, values)  # if the address is not in the DB
+                break
+            except InternalError as error:
+                if error.errno == "1213":  # we have deadlock
+                    time.sleep(1)
+            except Exception as error:
                 print error
-
-        except Exception as error:
-            print error
+                break
 
     def insert_dictionary(self, dictionary, coin):
         """
@@ -67,7 +61,12 @@ class DBClient(object):
         for utx in dictionary.keys():
             for output in dictionary[utx].outputs.keys():
                 address = BlockChainParser.public_key_to_address(dictionary[utx].outputs[output][0])
-                amount = float(dictionary[utx].outputs[output][1]) / 100000000  # the amount comes in satoshi(10^-8)
-                self.update_balance(coin, address, amount)
+                if address != "":
+                    amount = float(dictionary[utx].outputs[output][1]) / 100000000  # the amount comes in satoshi(10^-8)
+                    self.update_balance(coin, address, amount)
                 del dictionary[utx].outputs[output]
             del dictionary[utx]
+            if len(dictionary) % 100 == 0:
+                print "size of UTXs: ", len(dictionary)
+                self.conn.commit()  # will commit the changes
+

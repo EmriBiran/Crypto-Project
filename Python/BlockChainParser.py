@@ -32,7 +32,7 @@ class BlockChainParser(object):
         continue_parsing = True
         block_file_number_str = '00000'
         block_number_index = 0
-        while int(block_file_number_str) < 975:  # until segwit fork
+        while int(block_file_number_str) < 1:  # until segwit fork
             with open(self.block_chain_files_path + block_file_number_str + ".dat", 'rb') as blockchain:
                 while continue_parsing:
                     try:
@@ -126,40 +126,36 @@ class BlockChainParser(object):
         """
         utx = UTX()
         tx_str = ''
-        nversion = '{:08x}'.format(tx.version, 'x')
-        nversion = self.reverse_bytes(nversion)
+        nversion = tx.version
         in_count = self.fix_count(tx.inCount , tx.in_count_header)
         out_count = self.fix_count(tx.outCount , tx.out_count_header)
-        n_lock_time = '{:08x}'.format(tx.lockTime, 'x')
-        n_lock_time = self.reverse_bytes(n_lock_time)
+        n_lock_time = tx.lockTime
         tx_str = tx_str + nversion + in_count
 
-        for input in tx.inputs:
-            prev_hash = hashStr(input.prevhash)
-            prevout_n = '{:08x}'.format(input.txOutId, 'x')    # index of transaction
+        for tx_input in tx.inputs:
+            prev_hash = hash_str(tx_input.prevhash)
+            prevout_n = '{:08x}'.format(tx_input.txOutId, 'x')    # index of transaction
             self.spend_tx(prev_hash, prevout_n)
             prev_hash = self.reverse_bytes(prev_hash)
             prevout_n = self.reverse_bytes(prevout_n)
-            script_len = self.fix_count(input.scriptLen, input.script_len_header)
-            script_sig = hashStr(input.scriptSig)
-            sequence = '{:08x}'.format(input.seqNo, 'x')
-            sequence = self.reverse_bytes(sequence)
+            script_len = self.fix_count(tx_input.scriptLen, tx_input.script_len_header)
+            script_sig = hash_str(tx_input.scriptSig)
+            sequence = tx_input.seqNo
             tx_str = tx_str + prev_hash + prevout_n + script_len + script_sig + sequence
         tx_str = tx_str + out_count
 
         i = 0
         for output in tx.outputs:
-            value = '{:016x}'.format(output.value, 'x')
-            value = self.reverse_bytes(value)
+            value = output.value
             script_len = self.fix_count(output.scriptLen, output.script_len_header)
-            script_pub_key = hashStr(output.pubkey)
+            script_pub_key = hash_str(output.pubkey)
             tx_str = tx_str + value + script_len + script_pub_key
             output_public_key = ""
             try:
                 output_public_key = output.decodeScriptPubkey(output.pubkey)  # sometimes its a empty value
             except Exception as error:
                 pass
-            utx.outputs[str(i)] = (output_public_key, output.value)
+            utx.outputs[str(i)] = (output_public_key, output.int_value)
             i += 1
 
         tx_str = tx_str + n_lock_time
