@@ -6,11 +6,21 @@ var path = require("path");
 var mysql = require('mysql');
 var builder = require('xmlbuilder');
 var fs = require('fs');
+var q = require('q');
 
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.json());
+app.use(express.urlencoded());
 
 function read_from_DB(address)
+/**
+ * input: string - address of the public key
+ * output: None 
+ * this function sends sql query to the DB and retrun all the coins balances of the input address
+ * note that this function is async function so you cant call like regular function
+ */
 {
+    var deffered = q.defer();
     var con = mysql.createConnection({
         host: '127.0.0.1',
         user: 'root',
@@ -24,24 +34,39 @@ function read_from_DB(address)
     var sql = "SELECT * FROM balances WHERE address = " + mysql.escape(address); // prevent sql injection
     con.query(sql, function(err, result, fields){
         if (err) throw err;
-        console.log(result);
-        return result;
+        deffered.resolve(result);
     });
+    return deffered.promise;
 }
 
 // create xml file from PK entered by user
-function make_xml_file(address)
+async function make_xml_file(address)
+/**
+ * input: string - address of the public key
+ * output: None
+ * this function creates the xml file based on the input address and saves the file on the server side
+ */
 {
-    var xml = builder.create('coinBook');
-    xml.ele('coin')
-        .ele('coinName', "Some_coin").up()
-        .ele('coinBalance', '52').up()
-        .up()
+    var balance;
+    await read_from_DB(address).then(function(result){ // will wait unti the async function return
+        balance = result[0];
+    });
+
+
+    var xml = builder.create('COINS');
+    xml.ele('COIN')
+        .ele('CoinName', "BITCOIN CORE").up()
+        .ele('CoinBalance', balance.core_balance).up().up()
+        .ele('COIN')
+        .ele('CoinName', "BITCOIN CASH").up()
+        .ele('CoinBalance', balance.cash_balance).up().up()
+        .ele('COIN')
+        .ele('CoinName', "BITCOIN GOLD").up()
+        .ele('CoinBalance', balance.gold_balance).up().up()
     .end();
 
-
     var doc = xml.toString({pretty: true});
-    fs.writeFile('C:\\temp\\test.xml', doc, function(err){
+    fs.writeFile('C:\\Windows\\CryptoProject\\ProjectFilesGit\\Crypto-Project\\public\\HTML\\balances.xml', doc, function(err){
         if(err)
         {
             return console.log(err);
@@ -52,15 +77,25 @@ function make_xml_file(address)
 
 // activate HTML page
 app.get("/", function(req, res){  // the main page
+    /**
+     * input: http request of th main page
+     * ouput: html file and css files
+     * this will handle the http request of the main page
+     */
     res.sendFile(path.join(__dirname, "public\\HTML", "MainPage.html"));
 });
 
 // send xml to frontend
-app.get("/EXMPLExml.xml", function(req, res){  // sending the xml file as response for the xml request
+app.post("/balances.xml", function(req, res){ 
+    /**
+     * input: http request for the xml file
+     * output: xml file
+     * this will handle the http request for the xml file
+     */
+    var address = req.body.public_key;
+    make_xml_file(address);
     res.contentType('application/xml');
-    res.sendFile(path.join(__dirname, "public\\HTML", "EXMPLExml.xml"));   
+    res.sendFile(path.join(__dirname, "public\\HTML", "balances.xml"));   
 });
 
-// connect to DB
-read_from_DB("lior");
 app.listen(80);

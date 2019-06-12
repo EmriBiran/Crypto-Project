@@ -66,9 +66,18 @@
 			var userPK = document.getElementById('PublicKey').value;
 			var worngInput = false;
 			// validate PK length
-			if(userPK.length == NOINPUT);											// do not react to no input
-			else if( userPK.length < SHORTPK )	alert("Input Is Too Short");
-			else if( userPK.length > LONGPK ) 	alert("Input Is Too Long");
+			if(userPK.length == NOINPUT)
+				return;		// do not react to no input
+			else if( userPK.length < SHORTPK )
+			{
+				alert("Input Is Too Short");
+				return;
+			}
+			else if( userPK.length > LONGPK )
+			{
+				 alert("Input Is Too Long");
+				 return;
+			}
 			// looking for char mistakes in input
 			for (i = 0; i < userPK.length; i++){ 	
 				if( (userPK.charCodeAt(i) < LOWASCILTRS) || (userPK.charCodeAt(i) > HIGHASCILTRS) ||
@@ -77,7 +86,11 @@
 					break;
 				}
 			}
-			if( worngInput )  				alert("Invalid Input");
+			if( worngInput ) 
+			{
+				alert("Invalid Input");
+				return;
+			}
 			else{
 				// if PK is ok activate waiting bar
 				document.getElementById('show').style.visibility='visible';
@@ -90,8 +103,9 @@
 								document.getElementById('show').style.visibility='hidden'; // make watinig ber hide
 							}, 2000);													   // create an active wait					
 					};
-					retVar = xhttp.open("GET", "/EXMPLExml.xml", true);					  // xml connector
-					xhttp.send();														  // send xml to FrontEnd
+					retVar = xhttp.open("POST", "/balances.xml", true);	// xml connector
+					xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+					xhttp.send("public_key=" + userPK);														  // send xml to FrontEnd
 				}
 				catch(err){
 					alert("Sorry We Could Not Find Your Balance");						  // there is no such PK
@@ -109,7 +123,7 @@
 			//var len = coin.length;
 			var len = SUPPORTEDCOINS;						// number of supported coins
 			// build table
-			table +="<tr><th><center>" + "BITCOIN" + "</center></th>";
+			table +="<tr><th><center>" + "BITCOIN CORE" + "</center></th>";
 			table +="<th><center>" + "BITCOIN CASH" + "</center></th>";
 			table +="<th><center>" + "BITCOIN GOLD" + "</center></th></tr>";
 			// table +="<tr>";
