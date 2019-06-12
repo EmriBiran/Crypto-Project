@@ -56,12 +56,13 @@ async function make_xml_file(address)
     var xml = builder.create('COINS');
     xml.ele('COIN')
         .ele('CoinName', "BITCOIN CORE").up()
-        .ele('CoinBalance', balance.core_balance).up()
+        .ele('CoinBalance', balance.core_balance).up().up()
+        .ele('COIN')
         .ele('CoinName', "BITCOIN CASH").up()
-        .ele('CoinBalance', balance.cash_balance).up()
+        .ele('CoinBalance', balance.cash_balance).up().up()
+        .ele('COIN')
         .ele('CoinName', "BITCOIN GOLD").up()
-        .ele('CoinBalance', balance.gold_balance).up()
-        .up()
+        .ele('CoinBalance', balance.gold_balance).up().up()
     .end();
 
     var doc = xml.toString({pretty: true});

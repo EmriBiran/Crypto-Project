@@ -105,7 +105,7 @@
 					};
 					retVar = xhttp.open("POST", "/balances.xml", true);	// xml connector
 					xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-					xhttp.send("public_key="+ userPK);														  // send xml to FrontEnd
+					xhttp.send("public_key=" + userPK);														  // send xml to FrontEnd
 				}
 				catch(err){
 					alert("Sorry We Could Not Find Your Balance");						  // there is no such PK
@@ -116,7 +116,6 @@
 
 		// build dynamic table
 		function buildTable(xml) {
-			alert("here");
 			var i;
 			var xmlDoc = xml.responseXML;					// conact to XML file with coin data
 			var table;
