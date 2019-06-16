@@ -1,5 +1,6 @@
 from blocktools import*
 from block import Block
+from block import TxInput
 import os
 import hashlib
 import base58
@@ -74,17 +75,9 @@ class BlockChainParser(object):
         delete this transaction leaving us only with the unspent transaction
         """
         if int(prev_hash, 16) != 0:  # check if this is not a new generated coin
-            del self.utxs[prev_hash].outputs[str(int(prevout_n, 16))]  # delete the transaction if it was used
+            del self.utxs[prev_hash].outputs[str(prevout_n)]  # delete the transaction if it was used
             if self.utxs[prev_hash].outputs == {}:  # if dictionary is empty delete the entire transaction
                 del self.utxs[prev_hash]
-
-    @staticmethod
-    def hashStr(bytebuffer):
-        """
-        :param bytebuffer: string in ascii representation
-        :return: the hex representation of the string
-        """
-        return ''.join(('%02x' % ord(a)) for a in bytebuffer)
 
     @staticmethod
     def increment_block(block_string):
@@ -105,9 +98,9 @@ class BlockChainParser(object):
         if size == 0xfd:  # if fd<size<ffff need to be 3 bytes if size<fd need to be 2 bytes
             icount = '{:04x}'.format(count, 'x') + "fd"  # change count from int to 2B HEX
         elif size == 0xfe:
-            icount = '{:04x}'.format(count, 'x') + "fe"  # change to 3 bytes
+            icount = '{:08x}'.format(count, 'x') + "fe"  # change to 5 bytes
         elif size == 0xff:
-            icount = '{:04x}'.format(count, 'x') + "ff"  # change to 3 bytes
+            icount = '{:016x}'.format(count, 'x') + "ff"  # change to 9 bytes
 
         else:
             icount = format(count, 'x')         # change count from int to 2B HEX
@@ -134,10 +127,10 @@ class BlockChainParser(object):
 
         for tx_input in tx.inputs:
             prev_hash = hash_str(tx_input.prevhash)
-            prevout_n = '{:08x}'.format(tx_input.txOutId, 'x')    # index of transaction
+            prevout_n = tx_input.txOutId   # index of transaction
             self.spend_tx(prev_hash, prevout_n)
             prev_hash = self.reverse_bytes(prev_hash)
-            prevout_n = self.reverse_bytes(prevout_n)
+            prevout_n = tx_input.tx_out_index
             script_len = self.fix_count(tx_input.scriptLen, tx_input.script_len_header)
             script_sig = hash_str(tx_input.scriptSig)
             sequence = tx_input.seqNo

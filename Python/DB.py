@@ -1,8 +1,7 @@
 import mysql.connector
-import time
 from BlockChainParser import BlockChainParser
-from mysql.connector import InternalError
 import time
+
 
 class DBClient(object):
 
@@ -16,6 +15,7 @@ class DBClient(object):
                 break
             except Exception as error:
                 print "error while connecting to mysql  staling attempts"
+                print error
                 time.sleep(20)
         self.cursor = self.conn.cursor()
         print "success connecting"
@@ -23,9 +23,9 @@ class DBClient(object):
     def __del__(self):  # destructor
         """
         :return: None
-        upon destroying the DBclient it will commit all the changes to the DB and close the connection
+        upon destroying the DBClient it will commit all the changes to the DB and close the connection
         """
-        self.conn.commit()  # saves all the changes
+        self.conn.commit()  # saves all the changes(just in case..)
         self.conn.close()
 
     def update_balance(self, coin, address, amount):
@@ -35,28 +35,21 @@ class DBClient(object):
         :param amount: string- amount to be updated
         :return:None
         the function sends sql query that updates the amount of coins that the current address has
-        the function is build as multi threaded safe from deadlocks
         """
-        while True:
-            sql = "INSERT INTO balances(address, " + coin + "_balance) VALUES (%s, %s) ON DUPLICATE KEY UPDATE " \
-                + coin + "_balance = " + coin + "_balance + %s"
-            values = (address, amount, amount)
-            try:
-                self.cursor.execute(sql, values)  # if the address is not in the DB
-                break
-            except InternalError as error:
-                if error.errno == "1213":  # we have deadlock
-                    time.sleep(1)
-            except Exception as error:
-                print error
-                break
+        sql = "INSERT INTO balances(address, " + coin + "_balance) VALUES (%s, %s) ON DUPLICATE KEY UPDATE " \
+            + coin + "_balance = " + coin + "_balance + %s"
+        values = (address, amount, amount)
+        try:
+            self.cursor.execute(sql, values)  # if the address is not in the DB
+        except Exception as error:
+            print error
 
     def insert_dictionary(self, dictionary, coin):
         """
         :param dictionary:  dictionary - the UTXs dictionary that was build by the parser
         :param coin: string - the name of the fork we currently scanning
         :return: None
-        iterate the dictionary and insert all the UTX values to the DB and delete those we updated
+        iterate the dictionary and insert all the UTX values to the DB and delete those we updated from the dictionary
         """
         for utx in dictionary.keys():
             for output in dictionary[utx].outputs.keys():
@@ -69,4 +62,3 @@ class DBClient(object):
             if len(dictionary) % 100 == 0:
                 print "size of UTXs: ", len(dictionary)
                 self.conn.commit()  # will commit the changes
-

@@ -65,33 +65,33 @@ class Block:
 
 class Tx:
     def __init__(self, blockchain):
-        #self.version = uint4(blockchain)
         self.version = hash_str(blockchain.read(4))
         self.inCount, self.in_count_header = varint(blockchain)
         self.inputs = []
         self.seq = 1
         for i in range(0, self.inCount):
-            input = txInput(blockchain)
-            self.inputs.append(input)
+            tx_input = TxInput(blockchain)
+            self.inputs.append(tx_input)
         self.outCount, self.out_count_header = varint(blockchain)
         self.outputs = []
         if self.outCount > 0:
             for i in range(0, self.outCount):
-                output = txOutput(blockchain)
+                output = TxOutput(blockchain)
                 self.outputs.append(output)
         self.lockTime = hash_str(blockchain.read(4))
 
 
-class txInput:
+class TxInput:
     def __init__(self, blockchain):
         self.prevhash = hash32(blockchain)
-        self.txOutId = uint4(blockchain)
+        self.tx_out_index = blockchain.read(4)
+        self.txOutId = struct.unpack('I', self.tx_out_index)[0]
+        self.tx_out_index = hash_str(self.tx_out_index)
         self.scriptLen, self.script_len_header = varint(blockchain)
         self.scriptSig = blockchain.read(self.scriptLen)
-        #self.seqNo = uint4(blockchain)
         self.seqNo = hash_str(blockchain.read(4))
 
-    def decodeScriptSig(self,data):
+    def decodeScriptSig(self, data):
         hexstr = hash_str(data)
         if 0xffffffff == self.txOutId:  # Coinbase
             return hexstr
@@ -99,25 +99,27 @@ class txInput:
         scriptLen *= 2
         script = hexstr[2:2+scriptLen]
         print "\tScript:\t\t " + script
-        if SIGHASH_ALL != int(hexstr[scriptLen:scriptLen+2],16): # should be 0x01
+        if SIGHASH_ALL != int(hexstr[scriptLen:scriptLen+2], 16):
             print "\t Script op_code is not SIGHASH_ALL"
             return hexstr
         else:
             pubkey = hexstr[2+scriptLen+2:2+scriptLen+2+66]
-            print " \tInPubkey:\t "  + pubkey
+            print " \tInPubkey:\t " + pubkey
 
 
-class txOutput:
+class TxOutput:
     def __init__(self, blockchain):
-        #self.value = uint8(blockchain)
         self.value = blockchain.read(8)
         self.int_value = struct.unpack('Q', self.value)[0]
         self.value = hash_str(self.value)
         self.scriptLen, self.script_len_header = varint(blockchain)
-        #self.scriptLen = hash_str(blockchain.read(6))
         self.pubkey = blockchain.read(self.scriptLen)
 
     def decodeScriptPubkey(self, data):
+        """
+        :param data: string - script pub key string
+        :return: hex string of the public key
+        """
         hexstr = hash_str(data)
         op_idx = int(hexstr[0:2], 16)
         try:
@@ -126,11 +128,10 @@ class txOutput:
             keylen = op_idx
             return hexstr[2:2+keylen*2]
         if op_code1 == "OP_DUP":  # P2PKHA pay to pubkey hash mode
-            keylen = int(hexstr[4:6],16)
+            keylen = int(hexstr[4:6], 16)
             return hexstr[6:6+keylen*2]
         elif op_code1 == "OP_HASH160":  # P2SHA pay to script hash
-            keylen = int(hexstr[2:4],16)
+            keylen = int(hexstr[2:4], 16)
             return hexstr[4:4+keylen*2]
-        else:  # TODO extend for multi-signature parsing
+        else:
             return hexstr
-
