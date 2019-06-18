@@ -1,6 +1,6 @@
 import mysql.connector
-from BlockChainParser import BlockChainParser
 import time
+import json
 
 
 class DBClient(object):
@@ -51,6 +51,8 @@ class DBClient(object):
         :return: None
         iterate the dictionary and insert all the UTX values to the DB and delete those we updated from the dictionary
         """
+
+        """
         for utx in dictionary.keys():
             for output in dictionary[utx].outputs.keys():
                 address = BlockChainParser.public_key_to_address(dictionary[utx].outputs[output][0])
@@ -62,3 +64,38 @@ class DBClient(object):
             if len(dictionary) % 100 == 0:
                 print "size of UTXs: ", len(dictionary)
                 self.conn.commit()  # will commit the changes
+        """
+
+    def insert_transaction(self, tx_hash, outputs):
+        sql = "INSERT INTO utxs (hash, outputs) VALUES (%s, %s)"
+        values = (tx_hash, json.dumps(outputs))
+        try:
+            self.cursor.execute(sql, values)
+        except Exception as error:
+            print error
+
+    def spend_tx(self, prev_hash, prev_out):
+        if int(prev_hash, 16) == 0:  # check if this is not a new generated coin
+            return
+        sql = "SELECT * FROM utxs WHERE hash = %s"
+        value = (prev_hash,)
+        try:
+            self.cursor.execute(sql, value)
+            result = self.cursor.fetchall()[0][1]
+            outputs = json.loads(result)
+            del outputs[prev_out]
+            if outputs == {}:
+                sql = "DELETE FROM utxs WHERE hash = %s"
+                values = (prev_hash,)
+            else:
+                sql = "UPDATE utxs SET outputs = %s WHERE hash = %s"
+                values = (json.dumps(outputs), prev_hash)
+            self.cursor.execute(sql, values)
+
+        except Exception as error:
+            print error
+
+
+    def save_all_changes(self):
+        self.conn.commit()
+

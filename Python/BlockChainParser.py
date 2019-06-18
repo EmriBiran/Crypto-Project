@@ -1,9 +1,9 @@
 from blocktools import*
 from block import Block
-from block import TxInput
 import os
 import hashlib
 import base58
+from DB import DBClient
 
 
 class UTX(object):
@@ -22,9 +22,9 @@ class BlockChainParser(object):
         will save the path to the block files, and allocate memory for the UTX dictionary
         """
         self.block_chain_files_path = "C:\\Users\\rainesl\\AppData\\Roaming\\Bitcoin\\blocks" + "\\blk"
-        self.utxs = {}  # dictionary in stack
+        self.db_client = DBClient()
 
-    def parse(self):
+    def parse_the_blockchain(self):
         """
         input: None
         :return: None
@@ -40,6 +40,9 @@ class BlockChainParser(object):
                         block = Block(blockchain)  # transform the data from .dat
                         print "scanning block num ", block_number_index, "block file ", block_file_number_str
                         block_number_index += 1
+                        if block_number_index % 1000 == 0:
+                            self.db_client.save_all_changes()
+
                     except Exception as error:  # run on the blockchain
                         if blockchain.tell() == os.fstat(
                                 blockchain.fileno()).st_size:  # will tell if the pointer is at the end of the file
@@ -79,13 +82,13 @@ class BlockChainParser(object):
             if self.utxs[prev_hash].outputs == {}:  # if dictionary is empty delete the entire transaction
                 del self.utxs[prev_hash]
 
-    @staticmethod
-    def increment_block(block_string):
+    def increment_block(self, block_string):
         """
         :param block_string: string - the current block number as 5 digit string
         :return: string - the incremented string of the current block number as 5 digit string
         """
         block_string = '%05d' % (int(block_string) + 1)  # convert to int and back to string
+        self.db_client.save_all_changes()
         return block_string
 
     def fix_count(self, count, size):
@@ -117,7 +120,7 @@ class BlockChainParser(object):
         also will call the spent transaction function that will erase all the input in current transaction
         from the dictionary
         """
-        utx = UTX()
+        db_utx = {}
         tx_str = ''
         nversion = tx.version
         in_count = self.fix_count(tx.inCount , tx.in_count_header)
@@ -128,7 +131,7 @@ class BlockChainParser(object):
         for tx_input in tx.inputs:
             prev_hash = hash_str(tx_input.prevhash)
             prevout_n = tx_input.txOutId   # index of transaction
-            self.spend_tx(prev_hash, prevout_n)
+            self.db_client.spend_tx(prev_hash, str(prevout_n))
             prev_hash = self.reverse_bytes(prev_hash)
             prevout_n = tx_input.tx_out_index
             script_len = self.fix_count(tx_input.scriptLen, tx_input.script_len_header)
@@ -148,14 +151,15 @@ class BlockChainParser(object):
                 output_public_key = output.decodeScriptPubkey(output.pubkey)  # sometimes its a empty value
             except Exception as error:
                 pass
-            utx.outputs[str(i)] = (output_public_key, output.int_value)
+            db_utx[str(i)] = (output_public_key, output.int_value)
             i += 1
 
         tx_str = tx_str + n_lock_time
         hash1 = hashlib.sha256(tx_str.decode("hex")).hexdigest()
         hash2 = hashlib.sha256(hash1.decode("hex")).hexdigest()
         tx_hash = self.reverse_bytes(hash2)
-        self.utxs[tx_hash] = utx
+
+        self.db_client.insert_transaction(tx_hash, db_utx)
 
     @staticmethod
     def public_key_to_address(public_key):
