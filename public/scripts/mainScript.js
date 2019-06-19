@@ -122,19 +122,34 @@
 			var coin = xmlDoc.getElementsByTagName("COIN");	// pull data from "COIN" section
 			//var len = coin.length;
 			var len = SUPPORTEDCOINS;						// number of supported coins
+			
 			// build table
-			table +="<tr><th><center>" + "BITCOIN CORE" + "</center></th>";
-			table +="<th><center>" + "BITCOIN CASH" + "</center></th>";
-			table +="<th><center>" + "BITCOIN GOLD" + "</center></th></tr>";
-			// table +="<tr>";
-			// for (i = 0; i <len; i++) { 
-			// 	table += "<th><center>" + coin[i].getElementsByTagName("CoinName")[0].childNodes[0].nodeValue + "</center></th>";
-			// }
-			// table += "</tr>";
+			 table +="<tr>";
+			 try{ 
+				 // this will raise a error only if the xml file is not complete means the DB returned empty
+			 	for (i = 0; i <len; i++) { 
+					table += "<th><center>" + coin[i].getElementsByTagName("CoinName")[0].childNodes[0].nodeValue + "</center></th>";
+				 }
+			}
+			catch(err)
+			{
+				document.getElementById('show').style.visibility='hidden';
+				alert("Sorry We Could Not Find Your Address");
+				return;
+			}
+			table += "</tr>";
 			table += "<tr>";
+			
 			// fetch coins value
 			for (i = 0; i <len; i++) { 
-				table += "<td><center>" + coin[i].className + coin[i].getElementsByTagName("CoinBalance")[0].childNodes[0].nodeValue + "</center></td>";
+				try
+				{
+					table += "<td><center>" + coin[i].className + coin[i].getElementsByTagName("CoinBalance")[0].childNodes[0].nodeValue + "</center></td>";
+				}
+				catch(err)
+				{
+					table += "<td><center>"+ "" +"</center></td>"; // if it is a empty field
+				}
 			}
 			table += "</tr>";
 			document.getElementById("CoinsTable").innerHTML = table;		// send back table to FrontEnd

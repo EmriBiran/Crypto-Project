@@ -35,6 +35,7 @@ function read_from_DB(address)
     con.query(sql, function(err, result, fields){
         if (err) throw err;
         deffered.resolve(result);
+        con.destroy();
     });
     return deffered.promise;
 }
@@ -45,34 +46,48 @@ async function make_xml_file(address)
  * input: string - address of the public key
  * output: None
  * this function creates the xml file based on the input address and saves the file on the server side
+ * note that this function is async function you cant call like regular function
  */
 {
+    var deffered = q.defer();
     var balance;
     await read_from_DB(address).then(function(result){ // will wait unti the async function return
         balance = result[0];
     });
 
+    if(!balance)
+    {
 
+    }
     var xml = builder.create('COINS');
-    xml.ele('COIN')
-        .ele('CoinName', "BITCOIN CORE").up()
-        .ele('CoinBalance', balance.core_balance).up().up()
-        .ele('COIN')
-        .ele('CoinName', "BITCOIN CASH").up()
-        .ele('CoinBalance', balance.cash_balance).up().up()
-        .ele('COIN')
-        .ele('CoinName', "BITCOIN GOLD").up()
-        .ele('CoinBalance', balance.gold_balance).up().up()
-    .end();
+    try{
 
+        xml.ele('COIN')
+            .ele('CoinName', "BITCOIN CORE").up()
+            .ele('CoinBalance', balance.core_balance).up().up()
+            .ele('COIN')
+            .ele('CoinName', "BITCOIN CASH").up()
+            .ele('CoinBalance', balance.cash_balance).up().up()
+            .ele('COIN')
+            .ele('CoinName', "BITCOIN GOLD").up()
+            .ele('CoinBalance', balance.gold_balance).up().up()
+    }
+    catch(err) // will raise error if the DB returned empty 
+    {
+        console.log(err)
+    }
+    xml.end();
+        
     var doc = xml.toString({pretty: true});
-    fs.writeFile('C:\\Windows\\CryptoProject\\ProjectFilesGit\\Crypto-Project\\public\\HTML\\balances.xml', doc, function(err){
+    fs.writeFile(path.join(__dirname, "public\\HTML", "balances.xml"), doc, function(err){
         if(err)
         {
             return console.log(err);
         }
         console.log("saved xml");
+        deffered.resolve();
     });
+    return deffered.promise;
 }
 
 // activate HTML page
@@ -86,16 +101,17 @@ app.get("/", function(req, res){  // the main page
 });
 
 // send xml to frontend
-app.post("/balances.xml", function(req, res){ 
+app.post("/balances.xml", async function(req, res){ 
     /**
      * input: http request for the xml file
      * output: xml file
      * this will handle the http request for the xml file
      */
     var address = req.body.public_key;
-    make_xml_file(address);
-    res.contentType('application/xml');
-    res.sendFile(path.join(__dirname, "public\\HTML", "balances.xml"));   
+    await make_xml_file(address).then(function(){ // will block until xml is ready
+        res.contentType('application/xml');
+        res.sendFile(path.join(__dirname, "public\\HTML", "balances.xml"));   
+    });
 });
 
 app.listen(80);
