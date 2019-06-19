@@ -1,12 +1,10 @@
-import BlockChainParser
-from DB import *
+from BlockChainParser import BlockChainParser
 
 
 def main():
     parser = BlockChainParser()
-    parser.parse()  # will create dictionary with all utxs
-    db_client = DBClient()
-    db_client.insert_dictionary(parser.utxs, "core")
+    parser.parse_the_blockchain()
+    parser.update_balances("core")
 
 
 if __name__ == "__main__":

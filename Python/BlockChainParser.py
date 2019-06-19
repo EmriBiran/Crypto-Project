@@ -4,6 +4,9 @@ import os
 import hashlib
 import base58
 from DB import DBClient
+import json
+from multiprocessing import Process, Lock
+import time
 
 
 class UTX(object):
@@ -33,10 +36,10 @@ class BlockChainParser(object):
         continue_parsing = True
         block_file_number_str = '00000'
         block_number_index = 0
-        while int(block_file_number_str) < 1:  # until segwit fork
+        while int(block_file_number_str) < 975:  # until segwit fork
             with open(self.block_chain_files_path + block_file_number_str + ".dat", 'rb') as blockchain:
                 while continue_parsing:
-                    try:
+                    try:      
                         block = Block(blockchain)  # transform the data from .dat
                         print "scanning block num ", block_number_index, "block file ", block_file_number_str
                         block_number_index += 1
@@ -89,6 +92,8 @@ class BlockChainParser(object):
         """
         block_string = '%05d' % (int(block_string) + 1)  # convert to int and back to string
         self.db_client.save_all_changes()
+        with open("blocks.log", "a") as log_file:  # write to log file
+            log_file.write("start scan block file number" + block_string)
         return block_string
 
     def fix_count(self, count, size):
@@ -128,6 +133,8 @@ class BlockChainParser(object):
         n_lock_time = tx.lockTime
         tx_str = tx_str + nversion + in_count
 
+        # scan all the inputs and delete them from the utxs outputs
+
         for tx_input in tx.inputs:
             prev_hash = hash_str(tx_input.prevhash)
             prevout_n = tx_input.txOutId   # index of transaction
@@ -140,6 +147,7 @@ class BlockChainParser(object):
             tx_str = tx_str + prev_hash + prevout_n + script_len + script_sig + sequence
         tx_str = tx_str + out_count
 
+        # scan all the outputs and saves in the DB
         i = 0
         for output in tx.outputs:
             value = output.value
@@ -154,6 +162,7 @@ class BlockChainParser(object):
             db_utx[str(i)] = (output_public_key, output.int_value)
             i += 1
 
+        # hash the str 2 times according to the algorithm
         tx_str = tx_str + n_lock_time
         hash1 = hashlib.sha256(tx_str.decode("hex")).hexdigest()
         hash2 = hashlib.sha256(hash1.decode("hex")).hexdigest()
@@ -177,12 +186,38 @@ class BlockChainParser(object):
             address = ripemd160.hexdigest()
         if len(address) == 40:  # RIPEMD 160
             address = '00' + address  # adding network bytes
-            temp_adress = address
+            temp_address = address
             address = hashlib.sha256(address.decode("hex")).hexdigest()
             address = hashlib.sha256(address.decode("hex")).hexdigest()
-            address = temp_adress + address[0:8]  # adding 4 first bytes to stage of temp address
+            address = temp_address + address[0:8]  # adding 4 first bytes to stage of temp address
             address = base58.b58encode(address.decode("hex"))
         else:
             address = ""
         return address
+
+    def update_balances(self, coin):
+        """
+        :param coin: string - the name of the fork we currently scanning
+        :return: None
+        iterate the dictionary and insert all the UTX values to the DB and delete those we updated from the dictionary
+        """
+        address = ""
+        amount = 0
+        while True:
+            utxs = self.db_client.pop_utxs()
+            if not utxs:
+                return
+            for utx in utxs:
+                outputs = json.loads(utx[0])
+                for output in outputs:
+                    public_key = outputs[output][0]
+                    address = self.public_key_to_address(public_key)
+                    amount = float(outputs[output][1]) / 100000000  # the amount comes in satoshi(10^-8)
+                    self.db_client.update_balance(coin, address, amount)
+
+            self.db_client.save_all_changes()
+            print "updated", address, ":", amount
+
+
+
 
