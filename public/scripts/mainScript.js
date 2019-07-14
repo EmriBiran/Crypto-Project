@@ -1,18 +1,18 @@
 		// defines
-		const LOWASCILTRS   = 48;
-		const HIGHASCILTRS  = 122;
-		const MIDASCILTRS1  = 57;
-		const MIDASCILTRS2  = 65;
-		const DOT 		   = 46;
-		const SHTRODEL 	   = 64;
+		const NOINPUT      = 0;
+		const SUPPORTCOINS = 3;
+		const READYRSTCTR  = 4;
+		const SHORTMAIL    = 20;
 		const SHORTPK      = 26;
 		const LONGPK       = 35;
-		const SHORTMAIL    = 20;
+		const DOT 		   = 46;
+		const LOWASCILTRS  = 48;
 		const LONGMAIL     = 50;
-		const READYRSTTCTR = 4;
+		const MIDASCILTRS1 = 57;
+		const SHTRODEL 	   = 64;
+		const MIDASCILTRS2 = 65;
+		const HIGHASCILTRS = 122;
 		const CONNECTSTATE = 200;
-		const NOINPUT      = 0;
-		const SUPPORTEDCOINS = 3;
 		
 		document.getElementsByClassName("tablink")[0].click();
 		
@@ -97,7 +97,7 @@
 				try{
 					xhttp.onreadystatechange = function()
 					{
-						if(this.readyState == READYRSTTCTR && this.status == CONNECTSTATE)
+						if(this.readyState == READYRSTCTR && this.status == CONNECTSTATE)
 							window.setTimeout(() => { 
 								buildTable(this);										   // coins table builder
 								document.getElementById('show').style.visibility='hidden'; // make watinig ber hide
@@ -105,10 +105,10 @@
 					};
 					retVar = xhttp.open("POST", "/balances.xml", true);	// xml connector
 					xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-					xhttp.send("public_key=" + userPK);														  // send xml to FrontEnd
+					xhttp.send("public_key=" + userPK);				    // send xml to FrontEnd
 				}
 				catch(err){
-					alert("Sorry We Could Not Find Your Balance");						  // there is no such PK
+					alert("Sorry We Could Not Find Your Balance");	    // there is no such PK
 				}
 			}		
 		}
@@ -121,8 +121,12 @@
 			var table;
 			var coin = xmlDoc.getElementsByTagName("COIN");	// pull data from "COIN" section
 			//var len = coin.length;
+<<<<<<< HEAD
 			var len = SUPPORTEDCOINS;						// number of supported coins
 			
+=======
+			var len = SUPPORTCOINS;						// number of supported coins
+>>>>>>> e883e6e3d84af3b6da4fb111f68c6cfc956c0bf1
 			// build table
 			 table +="<tr>";
 			 try{ 
@@ -169,10 +173,12 @@
 					Dot = true;
 			}
 			if(MailNewList.length == 0);	// validate mail input length
-			else if( MailNewList.length < SHORTMAIL || MailNewList.length > LONGMAIL )  alert("Invalid Input");
-			else if( !Shtrodel || !Dot )  								  				alert("Please enter a valid email address");
-			else														   				alert("Congratulations Email Addres Added To Mail Spread!");
-			// we can add authintication from database
+			else if( MailNewList.length < SHORTMAIL || MailNewList.length > LONGMAIL )  
+				alert("Invalid Input");
+			else if( !Shtrodel || !Dot )  								  				
+				alert("Please enter a valid email address");
+			else	
+				alert("Congratulations Email Addres Added To Mail Spread!");
 		}
 
 		

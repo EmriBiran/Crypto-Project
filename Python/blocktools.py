@@ -1,6 +1,5 @@
 import struct
 
-
 def uint1(stream):
 	return ord(stream.read(1))
 
@@ -39,5 +38,5 @@ def varint(stream):
 	return -1
 
 
-def hashStr(bytebuffer):
-	return ''.join(('%02x'%ord(a)) for a in bytebuffer)
+def hash_str(bytebuffer):
+	return ''.join(('%02x' % ord(a)) for a in bytebuffer)
