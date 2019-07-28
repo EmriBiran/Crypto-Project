@@ -1,0 +1,14 @@
+<COINS>
+  <COIN>
+    <CoinName>BITCOIN CORE</CoinName>
+    <CoinBalance>12.123</CoinBalance>
+  </COIN>
+  <COIN>
+    <CoinName>BITCOIN CASH</CoinName>
+    <CoinBalance>23.858</CoinBalance>
+  </COIN>
+  <COIN>
+    <CoinName>BITCOIN DIAMOND</CoinName>
+    <CoinBalance>0</CoinBalance>
+  </COIN>
+</COINS>

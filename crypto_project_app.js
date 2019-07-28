@@ -69,8 +69,8 @@ async function make_xml_file(address)
             .ele('CoinName', "BITCOIN CASH").up()
             .ele('CoinBalance', balance.cash_balance).up().up()
             .ele('COIN')
-            .ele('CoinName', "BITCOIN GOLD").up()
-            .ele('CoinBalance', balance.gold_balance).up().up()
+            .ele('CoinName', "BITCOIN DIAMOND").up()
+            .ele('CoinBalance', balance.diamond_balance).up().up()
     }
     catch(err) // will raise error if the DB returned empty 
     {

@@ -120,18 +120,13 @@
 			var xmlDoc = xml.responseXML;					// conact to XML file with coin data
 			var table;
 			var coin = xmlDoc.getElementsByTagName("COIN");	// pull data from "COIN" section
-			//var len = coin.length;
-<<<<<<< HEAD
-			var len = SUPPORTEDCOINS;						// number of supported coins
-			
-=======
-			var len = SUPPORTCOINS;						// number of supported coins
->>>>>>> e883e6e3d84af3b6da4fb111f68c6cfc956c0bf1
+			var len = coin.length;
 			// build table
 			 table +="<tr>";
 			 try{ 
 				 // this will raise a error only if the xml file is not complete means the DB returned empty
 			 	for (i = 0; i <len; i++) { 
+					// alert(coin[i].getElementsByTagName("CoinName")[0].childNodes[0].nodeValue);
 					table += "<th><center>" + coin[i].getElementsByTagName("CoinName")[0].childNodes[0].nodeValue + "</center></th>";
 				 }
 			}
